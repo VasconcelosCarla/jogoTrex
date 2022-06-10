@@ -7,11 +7,12 @@ criar o solo e a colisão dele com o solo, assim como adicionar algumas animaç�
 var trex ,trex_running;
 var edges;
 var ground, groundImage; //groun é o solo
+var invisibleGround; //Solo invisível para retirar o bug o trex flutuando
 
 //função para carregar as imagens no jogo
 function preload(){
   trex_running = loadAnimation("trex1.png", "trex3.png", "trex4.png");
-  groundImage - loadImage("ground2.png");
+  groundImage = loadImage("ground2.png");
 
 }
 
@@ -25,9 +26,12 @@ function setup(){
   //criação das edges
   edges = createEdgeSprites();
 
-  //criação do solo
+  //criação do solo e adição de imagem
   ground = createSprite(200, 180, 400, 20);
+  ground.addImage("ground", groundImage);
 
+  invisibleGround = createSprite(200, 190, 400, 10);
+  invisibleGround.visible = false; //.visible(booleano) permite que o sprite se torne visivel ou não.
 }
 
 function draw(){
@@ -43,13 +47,13 @@ function draw(){
   }
 
   //usando a linguagem condicional para programar o pulo 
-  if(keyDown("space") || trex.y>=100){
+  if(keyDown("space") && trex.y>=100){
     trex.velocityY = -10;
   }
   //implementando a gravidade
   trex.velocityY = trex.velocityY + 0.5;
   //colisão com a edges
   //trex.collide(edges[3]);
-  trex.collide(ground); //colisão com o solo
+  trex.collide(invisibleGround); //colisão com o solo
   drawSprites();
 }
