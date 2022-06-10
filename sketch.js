@@ -3,13 +3,10 @@
 /*Na aula de hoje vamos projetar um dinossauro para o jogo trex, 
 criar o solo e a colisão dele com o solo, assim como adicionar algumas animações*/
 
-
-
 //declarando as variáveis
 var trex ,trex_running;
 var edges;
 var ground, groundImage; //groun é o solo
-
 
 //função para carregar as imagens no jogo
 function preload(){
@@ -17,7 +14,6 @@ function preload(){
   groundImage - loadImage("ground2.png");
 
 }
-
 
 function setup(){
   createCanvas(600,200)
@@ -47,7 +43,7 @@ function draw(){
   }
 
   //usando a linguagem condicional para programar o pulo 
-  if(keyDown("space")){
+  if(keyDown("space") || trex.y>=100){
     trex.velocityY = -10;
   }
   //implementando a gravidade
