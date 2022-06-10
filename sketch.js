@@ -8,12 +8,22 @@ var trex ,trex_running;
 var edges;
 var ground, groundImage; //groun é o solo
 var invisibleGround; //Solo invisível para retirar o bug o trex flutuando
+var cloud, cloudImg;
+var obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
+
+score = 0;
 
 //função para carregar as imagens no jogo
 function preload(){
   trex_running = loadAnimation("trex1.png", "trex3.png", "trex4.png");
   groundImage = loadImage("ground2.png");
-
+  cloudImg = loadImage("cloud.png");
+  obstacle1 = loadImage("obstacle1.png");
+  obstacle2 = loadImage("obstacle2.png");
+  obstacle3 = loadImage("obstacle3.png");
+  obstacle4 = loadImage("obstacle4.png");
+  obstacle5 = loadImage("obstacle5.png");
+  obstacle6 = loadImage("obstacle6.png");
 }
 
 function setup(){
@@ -35,8 +45,9 @@ function setup(){
 }
 
 function draw(){
-  background("white")
-  
+  background(255)
+  text("Pontuação: " + score, 500, 50); //Usando a concatenação para somar uma string e uma variavel numerica. 
+  score = score + Math.round(frameCount/60);
   //velocidade do solo 
   ground.velocityX = -2; //velocidade negativa para ir para a esqueda
   console.log(ground.x); //o console.log printa algo no console, nos mostra uma informação
@@ -55,5 +66,65 @@ function draw(){
   //colisão com a edges
   //trex.collide(edges[3]);
   trex.collide(invisibleGround); //colisão com o solo
+
+  spawClouds();
+  spawObstacles();
+
   drawSprites();
+}
+
+function spawClouds(){ //função para a criação das nuvens
+
+  //cloud = createSprite(600, 100, 40, 10);
+  //cloud.velocityX = -3;    aqui teremos um problema, testa antes de fazer o código abaixo.
+
+  if(frameCount % 60 === 0){  // nuvens vai aparecer a cada 60 quadros
+    cloud = createSprite(600, 100, 40, 10);
+    cloud.addImage(cloudImg);
+    cloud.y = Math.round(random(10, 60)); //usando uma altura aleatória na produção das nuvens
+    //usando o round para não vir numeros decimais.ex.: 11,5
+    cloud.scale = 0.5;
+    cloud.velocityX = -3;
+
+    cloud.lifetime = 210; //tempo de vida da nossa nuvem
+    //tempo = distancia/velocidade 600/3 = 200 (gosto de por 210 pq ver ela sumindo me irrita)
+
+    cloud.depth = trex.depth
+    trex.depth = trex.depth + 1; //deixando a profundidade mais coerente
+
+  }
+
+
+}
+function spawObstacles(){
+
+  if(frameCount % 60 ===0){
+    var obstacle = createSprite(400, 165, 10, 40);
+    obstacle.velocityX = -6
+
+    //gerar obstáculos aleatorios
+    var rand = Math.round(random(1,6));
+    switch(rand){
+      case 1: obstacle.addImage(obstacle1);
+              break;
+      case 2: obstacle.addImage(obstacle2);
+              break;
+      case 3: obstacle.addImage(obstacle3);
+              break;
+      case 4: obstacle.addImage(obstacle4);
+              break;
+      case 5: obstacle.addImage(obstacle5);
+              break;
+      case 6: obstacle.addImage(obstacle6);
+              break;
+      default: break;
+
+    }
+
+    obstacle.scale = 0.55;
+    obstacle.lifetime = 300;
+
+
+  
+  }
 }
