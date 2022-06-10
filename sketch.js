@@ -3,6 +3,13 @@
 /*Na aula de hoje vamos projetar um dinossauro para o jogo trex, 
 criar o solo e a colisão dele com o solo, assim como adicionar algumas animações*/
 
+
+/*declaramos variaveis com letra MAIÚSCULAS quando elas contém valores constantes que 
+não podem mudar dentro do programa*/
+var PLAY = 1;
+var END = 0;
+var gameState = PLAY;
+
 //declarando as variáveis
 var trex ,trex_running;
 var edges;
@@ -10,6 +17,8 @@ var ground, groundImage; //groun é o solo
 var invisibleGround; //Solo invisível para retirar o bug o trex flutuando
 var cloud, cloudImg;
 var obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
+
+var obstaclesGroup, cloudGroup;
 
 score = 0;
 
@@ -42,33 +51,61 @@ function setup(){
 
   invisibleGround = createSprite(200, 190, 400, 10);
   invisibleGround.visible = false; //.visible(booleano) permite que o sprite se torne visivel ou não.
+
+  obstaclesGroup = new Group();
+  cloudGroup = new Group();
 }
 
 function draw(){
   background(255)
   text("Pontuação: " + score, 500, 50); //Usando a concatenação para somar uma string e uma variavel numerica. 
-  score = score + Math.round(frameCount/60);
-  //velocidade do solo 
-  ground.velocityX = -2; //velocidade negativa para ir para a esqueda
-  console.log(ground.x); //o console.log printa algo no console, nos mostra uma informação
+  
 
-  //condição para o solo retornar
-  if(ground.x<0){
-    ground.x = ground.width/2;
-  }
+  //o if e o else if vão nos dar a condição de estado de jogo
+  if(gameState === PLAY){ 
+    //velocidade do solo 
+    ground.velocityX = -4; //velocidade negativa para ir para a esqueda
+    score = score + Math.round(frameCount/60); //só contamos os pontos no gameState === PLAY
+    //condição para o solo retornar
+    if(ground.x<0){
+      ground.x = ground.width/2;
+    }
 
-  //usando a linguagem condicional para programar o pulo 
-  if(keyDown("space") && trex.y>=100){
-    trex.velocityY = -10;
+    //usando a linguagem condicional para programar o pulo 
+    if(keyDown("space") && trex.y>=100){
+      trex.velocityY = -10;
+    }
+    //implementando a gravidade
+    trex.velocityY = trex.velocityY + 0.8;
+
+    spawClouds(); //gerar nuvens
+    spawObstacles(); //gerar obstáculos
+
+    //condição para o jogo acabar
+    if(obstaclesGroup.isTouching(trex)){
+      gameState = END;
+    }
+
+
   }
-  //implementando a gravidade
-  trex.velocityY = trex.velocityY + 0.5;
+  else if(gameState ===END){
+    ground.velocityX = 0; //velocidade é 0 quando o o trex colide
+    //mudança de velocidade para grupos
+    obstaclesGroup.setVelocityXEach(0); 
+    cloudGroup.setVelocityXEach(0);
+
+  }
+  
+  //console.log(ground.x); //o console.log printa algo no console, nos mostra uma informação
+
+ 
+
+  
   //colisão com a edges
   //trex.collide(edges[3]);
   trex.collide(invisibleGround); //colisão com o solo
 
-  spawClouds();
-  spawObstacles();
+  
 
   drawSprites();
 }
@@ -91,6 +128,8 @@ function spawClouds(){ //função para a criação das nuvens
 
     cloud.depth = trex.depth
     trex.depth = trex.depth + 1; //deixando a profundidade mais coerente
+
+    cloudGroup.add(cloud);
 
   }
 
@@ -122,8 +161,9 @@ function spawObstacles(){
     }
 
     obstacle.scale = 0.55;
-    obstacle.lifetime = 300;
-
+    obstacle.lifetime = 300; //tempo de vida da variavél para evitar o vazamento de memoria
+    
+    obstaclesGroup.add(obstacle);
 
   
   }
