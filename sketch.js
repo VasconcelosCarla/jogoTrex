@@ -75,7 +75,7 @@ function setup(){
   cloudGroup = new Group();
 
   trex.setCollider("circle", 0, 0, 40) //alterar a forma do colisor
-  trex.debug = true; //mostra a colisor
+  //trex.debug = true; //mostra a colisor
   
 
 }
