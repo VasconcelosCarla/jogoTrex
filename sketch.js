@@ -19,6 +19,8 @@ var cloud, cloudImg;
 var obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
 var gameOver, restart, gameOverImg, restartImg;
 
+var jumpSound, dieSound, checkPointSound;
+
 var obstaclesGroup, cloudGroup;
 
 score = 0;
@@ -37,6 +39,9 @@ function preload(){
   obstacle6 = loadImage("obstacle6.png");
   gameOverImg = loadImage("gameOver.png");
   restartImg = loadImage("restart.png");
+  jumpSound = loadSound("jump.mp3");
+  dieSound = loadSound("die.mp3");
+  checkPointSound = loadSound("checkpoint.mp3");
 }
 
 function setup(){
@@ -86,8 +91,12 @@ function draw(){
   //o if e o else if vão nos dar a condição de estado de jogo
   if(gameState === PLAY){ 
     //velocidade do solo 
-    ground.velocityX = -4; //velocidade negativa para ir para a esqueda
+    ground.velocityX = -(4 + 3*score); //velocidade negativa para ir para a esqueda
     score = score + Math.round(frameCount/60); //só contamos os pontos no gameState === PLAY
+
+    if(score>0 && score % 100 ===0){ //adicionando o som do checkpoint
+      checkPointSound.play();
+    }
     //condição para o solo retornar
     if(ground.x<0){
       ground.x = ground.width/2;
@@ -96,6 +105,7 @@ function draw(){
     //usando a linguagem condicional para programar o pulo 
     if(keyDown("space") && trex.y>=100){
       trex.velocityY = -10;
+      jumpSound.play(); //adicionando o som do pulo 
     }
     //implementando a gravidade
     trex.velocityY = trex.velocityY + 0.8;
@@ -105,6 +115,7 @@ function draw(){
 
     //condição para o jogo acabar
     if(obstaclesGroup.isTouching(trex)){
+      dieSound.play(); //adicionando o som da morte hehe
       gameState = END;
     }
 
@@ -169,8 +180,8 @@ function spawClouds(){ //função para a criação das nuvens
 function spawObstacles(){
 
   if(frameCount % 60 ===0){
-    var obstacle = createSprite(400, 165, 10, 40);
-    obstacle.velocityX = -6
+    var obstacle = createSprite(600, 165, 10, 40);
+    obstacle.velocityX = -(6 + score/100) //arrumando aqui a velocidade dos cactos
 
     //gerar obstáculos aleatorios
     var rand = Math.round(random(1,6));
