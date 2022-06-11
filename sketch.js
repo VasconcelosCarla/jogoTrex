@@ -11,12 +11,13 @@ var END = 0;
 var gameState = PLAY;
 
 //declarando as variáveis
-var trex ,trex_running;
+var trex ,trex_running, trex_collided;
 var edges;
 var ground, groundImage; //groun é o solo
 var invisibleGround; //Solo invisível para retirar o bug o trex flutuando
 var cloud, cloudImg;
 var obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
+var gameOver, restart, gameOverImg, restartImg;
 
 var obstaclesGroup, cloudGroup;
 
@@ -25,6 +26,7 @@ score = 0;
 //função para carregar as imagens no jogo
 function preload(){
   trex_running = loadAnimation("trex1.png", "trex3.png", "trex4.png");
+  trex_collided = loadAnimation("trex_collided.png");
   groundImage = loadImage("ground2.png");
   cloudImg = loadImage("cloud.png");
   obstacle1 = loadImage("obstacle1.png");
@@ -33,6 +35,8 @@ function preload(){
   obstacle4 = loadImage("obstacle4.png");
   obstacle5 = loadImage("obstacle5.png");
   obstacle6 = loadImage("obstacle6.png");
+  gameOverImg = loadImage("gameOver.png");
+  restartImg = loadImage("restart.png");
 }
 
 function setup(){
@@ -41,6 +45,8 @@ function setup(){
   //crie um sprite de trex, adição de animação e escala
   trex = createSprite(50,160,20,50);
   trex.addAnimation("running", trex_running);
+  trex.addAnimation("collided", trex_collided);
+ 
   trex.scale = 0.5
   //criação das edges
   edges = createEdgeSprites();
@@ -49,11 +55,27 @@ function setup(){
   ground = createSprite(200, 180, 400, 20);
   ground.addImage("ground", groundImage);
 
+  gameOver = createSprite(300,100);
+  gameOver.addImage(gameOverImg);
+  gameOver.scale = 0.5;
+  gameOver.visible = false;
+   
+
+  restart = createSprite(300, 140);
+  restart.addImage(restartImg);
+  restart.scale = 0.5;
+  restart.visible = false;
+
   invisibleGround = createSprite(200, 190, 400, 10);
   invisibleGround.visible = false; //.visible(booleano) permite que o sprite se torne visivel ou não.
 
   obstaclesGroup = new Group();
   cloudGroup = new Group();
+
+  trex.setCollider("circle", 0, 0, 40) //alterar a forma do colisor
+  trex.debug = true; //mostra a colisor
+  
+
 }
 
 function draw(){
@@ -90,9 +112,18 @@ function draw(){
   }
   else if(gameState ===END){
     ground.velocityX = 0; //velocidade é 0 quando o o trex colide
+    trex.velocityY = 0; 
+
+    gameOver.visible = true;
+    restart.visible = true;
+
+    trex.changeAnimation("collided");
     //mudança de velocidade para grupos
     obstaclesGroup.setVelocityXEach(0); 
     cloudGroup.setVelocityXEach(0);
+    //evita que os sprites que estão na tela morram.
+    obstaclesGroup.setLifetimeEach(-1);
+    cloudGroup.setLifetimeEach(-1);
 
   }
   
