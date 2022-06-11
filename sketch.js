@@ -1,8 +1,5 @@
 //### Professora Carla Vasconcelos ###//
 //Programando o jogo do trex da aula 10 as aula 18
-/*Na aula de hoje vamos projetar um dinossauro para o jogo trex, 
-criar o solo e a colisão dele com o solo, assim como adicionar algumas animações*/
-
 
 /*declaramos variaveis com letra MAIÚSCULAS quando elas contém valores constantes que 
 não podem mudar dentro do programa*/
@@ -91,8 +88,15 @@ function draw(){
   //o if e o else if vão nos dar a condição de estado de jogo
   if(gameState === PLAY){ 
     //velocidade do solo 
-    ground.velocityX = -(4 + 3*score); //velocidade negativa para ir para a esqueda
-    score = score + Math.round(frameCount/60); //só contamos os pontos no gameState === PLAY
+    ground.velocityX = -(4 + 3*score/100); //velocidade negativa para ir para a esqueda
+    /*a frameCout que conta toda a contagem de pontos,
+    mesmo quando o gameState é end. então ela não é interessante aqui pq os quadros 
+    vão continuar sendo contados*/
+
+    /*já a getFrameRate() diferente da frameCout analisa a frequencia de quadros, e ela é 
+    quase constante durante o jogo quando igual a 60. em alguns sistemas quando igual a 30*/
+
+    score = score + Math.round(getFrameRate()/60); //só contamos os pontos no gameState === PLAY 
 
     if(score>0 && score % 100 ===0){ //adicionando o som do checkpoint
       checkPointSound.play();
@@ -103,7 +107,7 @@ function draw(){
     }
 
     //usando a linguagem condicional para programar o pulo 
-    if(keyDown("space") && trex.y>=100){
+    if(keyDown("space") && trex.y>=130){
       trex.velocityY = -10;
       jumpSound.play(); //adicionando o som do pulo 
     }
@@ -136,7 +140,7 @@ function draw(){
     obstaclesGroup.setLifetimeEach(-1);
     cloudGroup.setLifetimeEach(-1);
 
-  }
+    }
   
   //console.log(ground.x); //o console.log printa algo no console, nos mostra uma informação
 
@@ -147,9 +151,25 @@ function draw(){
   //trex.collide(edges[3]);
   trex.collide(invisibleGround); //colisão com o solo
 
+  if(mousePressedOver(restart)){
+    reset(); //função reset quando chamada retorna a configurações iniciais.
+  }
   
 
   drawSprites();
+}
+
+//criação da função reset
+function reset(){ 
+  gameState = PLAY;
+  gameOver.visible = false;
+  restart.visible = false;
+
+  obstaclesGroup.destroyEach();
+  cloudGroup.destroyEach();
+
+  trex.changeAnimation("running");
+  score = 0;
 }
 
 function spawClouds(){ //função para a criação das nuvens
